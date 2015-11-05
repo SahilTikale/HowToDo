@@ -1,0 +1,83 @@
+I installed HaaS using the CCI/HaaS main codebase.
+
+I maintain a fork to the HaaS code base at https://github.com/SahilTikale/haas.git
+I wish to test some code that resides in a branch of the sahil's fork of HaaS codebase. 
+Lets say that branch is rHaaS-refactoring-work
+
+Following procedure will walk you through how to fetch code from a branch of the different forkwork with both main codebase and the fork. 
+
+Some Abbreviations:
+
+[MCB] Main CodeBase: https://github.com/CCI-MOC/haas.git
+[SF] Sahil's fork: https://github.com/SahilTikale/haas.git
+[BOI] Branch of interest: https://github.com/SahilTikale/haas/tree/rHaaS-refactoring-work
+
+Some Assumptions:
+
+1.) SF is in sync with MCB 
+2.) Only remote that is currently available is the MCB
+
+
+Steps to get the code from BOI:
+
+1.) Add SF as a new remote 
+git remote add sahil_haas https://github.com/SahilTikale/haas.git
+
+Check using command: git remote -v
+Output: 
+
+[root@moc-haas-master docs]# git remote -v
+origin	https://github.com/CCI-MOC/haas (fetch)
+origin	https://github.com/CCI-MOC/haas (push)
+sahil_haas	https://github.com/SahilTikale/haas.git (fetch)
+sahil_haas	https://github.com/SahilTikale/haas.git (push)
+
+2.) Fetch code from the new remote
+git fetch sahil_haas
+
+Check using command : git branch -lr 
+shows all the branches from both remotes
+
+origin/network-refactor
+  origin/v0.1-maint
+  origin/validateconfig
+  origin/vmbuilder
+  sahil_haas/ParseCamelCase
+  sahil_haas/devel
+  sahil_haas/haas-as-a-switch
+  sahil_haas/haas-as-an-Obm
+  sahil_haas/master
+  sahil_haas/rHaaS-refactoring-work
+
+3.) Fetch code from BOI:
+The branch of our interest is sahil_haas/rHaaS-refactoring-work
+
+Lets make a new local branch named "obm_ipmi" which fetches code from BOI
+git checkout -b obm_ipmi sahil_haas/rHaaS-refactoring-work
+
+Check using command: git branch
+It should show now that a new branch name obm_ipmi is created.
+
+[root@moc-haas-master docs]# git branch
+  dogfood
+  master
+* obm_ipmi
+
+
+** COMPLETED **
+
+
+Push Code to the specific branch of the repo 
+============================================
+Assumption: You made some code changes and now you wish to commit and push changes to that BOI 
+
+4.) Add changed files : git add <list of files modified/created>
+
+5.) Commit code: git commit -m "Some comment"
+
+6.) Push code to remote branch: 
+git push <remote name> <local-branchname>:<remote-branchname>
+git push sahil_haas obm_ipmi:rHaaS-refactoring-work
+
+Confirm the commits on by checking if your repo got updated.
+
