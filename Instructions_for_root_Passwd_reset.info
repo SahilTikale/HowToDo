@@ -1,0 +1,17 @@
+
+
+Requisite: You are able to boot the linux VM and reach the user login prompt.
+
+Step 1: Boot the machine, when it prompts to select the OS distribution [normal|recovery]
+	Select appropriate distribution and enter 'e'
+Step 2: Once on the boot menu, look for a line that starts like "linux /boot/vmlinuz-4.... ro ...." 
+	Replace the 'ro' with 'rw' and at the end append "init=/bin/bash"
+Step 3: Press control 'x' or F10 to continue with the boot process. This should get you into the 
+	single user mode.
+Step 4: remount the root partition as rw. 'mount -n -o remount,rw /'
+
+Step 5: Reset the root password 'passwd root'
+
+Step 6: Reboot the system: exec /sbin/init
+
+
