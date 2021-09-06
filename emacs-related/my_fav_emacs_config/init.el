@@ -1,36 +1,79 @@
-;; init.el --- Emacs configuration
+;; .emacs.d/init.el
 
-;; INSTALL PACKAGES
-;; --------------------------------------
-
+;; ===================================
+;; MELPA Package Support
+;; ===================================
+;; Enables basic packaging support
 (require 'package)
 
+;; Adds the Melpa archive to the list of available repositories
 (add-to-list 'package-archives
-       '("melpa" . "http://melpa.org/packages/") t)
+             '("melpa" . "http://melpa.org/packages/") t)
 
+;; Initializes the package infrastructure
 (package-initialize)
+
+;; If there are no archived package contents, refresh them
 (when (not package-archive-contents)
   (package-refresh-contents))
 
+;; Installs packages
+;;
+;; myPackages contains a list of package names
 (defvar myPackages
-  '(better-defaults
-    elpy ;; add the elpy package
-    material-theme))
+  '(better-defaults                 ;; Set up some better Emacs defaults
+    elpy                            ;; Emacs Lisp Python Environment
+    flycheck                        ;; On the fly syntax checking
+    py-autopep8                     ;; Run autopep8 on save
+    blacken                         ;; Black formatting on save
+    ein                             ;; Emacs IPython Notebook
+    material-theme                  ;; Theme
+    )
+  )
 
+;; Scans the list in myPackages
+;; If the package listed is not already installed, install it
 (mapc #'(lambda (package)
-    (unless (package-installed-p package)
-      (package-install package)))
+          (unless (package-installed-p package)
+            (package-install package)))
       myPackages)
 
-;; BASIC CUSTOMIZATION
-;; --------------------------------------
+;; ===================================
+;; Basic Customization
+;; ===================================
 
-(setq inhibit-startup-message t) ;; hide the startup message
-(load-theme 'material t) ;; load material theme
-(global-linum-mode t) ;; enable line numbers globally
-(add-hook 'python-mode-hook (lambda () (setq auto-fill-function 'do-auto-fill) (setq fill-column 79)))
+(setq inhibit-startup-message t)    ;; Hide the startup message
+(load-theme 'material t)            ;; Load material theme
+(global-linum-mode t)               ;; Enable line numbers globally
+(setq python-shell-interpreter "python3") ;;Set python3 as default interpreter
+;; python-pycompile support for flycheck
+(setq flycheck-python-pycompile-executable "python3")
+(setq elpy-rpc-python-command "python3")
+;; ipython for my REPL
+(setq python-shell-interpreter "ipython3"
+      python-shell-interpreter-args "-i")
 
-;; init.el ends here
+
+;; ====================================
+;; Development Setup
+;; ====================================
+;; Enable elpy
+(elpy-enable)
+
+;; Use IPython for REPL
+(setq python-shell-interpreter "jupyter"
+      python-shell-interpreter-args "console --simple-prompt"
+      python-shell-prompt-detect-failure-warning nil)
+(add-to-list 'python-shell-completion-native-disabled-interpreters
+             "jupyter")
+
+;; Enable Flycheck
+(when (require 'flycheck nil t)
+  (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
+  (add-hook 'elpy-mode-hook 'flycheck-mode))
+
+
+;; User-Defined init.el ends here
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -44,5 +87,12 @@
  ;; If there is more than one, they won't work right.
  )
 
-(elpy-enable)
-
+;; ENABLE ORG MODE
+;; Enable Org mode
+(require 'org)
+(define-key global-map "\C-cl" 'org-store-link)
+(define-key global-map "\C-ca" 'org-agenda)
+(setq org-log-done 'time)
+;; Make Org mode work with files ending in .org
+;; (add-to-list 'auto-mode-alist '("\\.org$" . org-mode))
+;; The above is the default in recent emacsen
